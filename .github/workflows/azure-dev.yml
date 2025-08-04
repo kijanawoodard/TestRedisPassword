@@ -46,11 +46,11 @@ jobs:
 
       - name: Provision Infrastructure
         run: azd provision --no-prompt
-        env:
-          AZURE_REDIS_PASSWORD: ${{ secrets.AZURE_REDIS_PASSWORD }}
+        #env:
+          #AZURE_REDIS_PASSWORD: ${{ secrets.AZURE_REDIS_PASSWORD }}
 
       - name: Deploy Application
         run: azd deploy --no-prompt
-        env:
-          AZURE_REDIS_PASSWORD: ${{ secrets.AZURE_REDIS_PASSWORD }}
+        #env:
+          #AZURE_REDIS_PASSWORD: ${{ secrets.AZURE_REDIS_PASSWORD }}
         
