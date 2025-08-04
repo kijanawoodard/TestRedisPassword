@@ -1,0 +1,70 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+@using StackExchange.Redis
+@inject IConnectionMultiplexer RedisConnection
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Redis Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Redis Error:</strong> @errorMessage
+    </div>
+}
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+    private string? errorMessage;
+    private const string CounterKey = "counter:value";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCounterFromRedis();
+    }
+
+    private async Task LoadCounterFromRedis()
+    {
+        try
+        {
+            errorMessage = null;
+            var db = RedisConnection.GetDatabase();
+            var value = await db.StringGetAsync(CounterKey);
+            if (value.HasValue && int.TryParse(value, out int count))
+            {
+                currentCount = count;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Show the error on screen but continue with default value
+            errorMessage = $"Error loading counter from Redis: {ex.Message}";
+        }
+    }
+
+    private async Task IncrementCount()
+    {
+        currentCount++;
+        await SaveCounterToRedis();
+    }
+
+    private async Task SaveCounterToRedis()
+    {
+        try
+        {
+            errorMessage = null;
+            var db = RedisConnection.GetDatabase();
+            await db.StringSetAsync(CounterKey, currentCount.ToString());
+        }
+        catch (Exception ex)
+        {
+            // Show the error on screen but don't fail the UI
+            errorMessage = $"Error saving counter to Redis: {ex.Message}";
+        }
+    }
+}

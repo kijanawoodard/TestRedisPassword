@@ -1,0 +1,6 @@
+{
+  "appHostPath": "../TestRedisPassword.AppHost/TestRedisPassword.AppHost.csproj",
+  "features": {
+    "deployCommandEnabled": "true"
+  }
+}
